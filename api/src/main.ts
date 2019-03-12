@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Connection } from 'typeorm';
 import { addPipesAndFilters, AppModule } from './app.module';
 import { config } from './config';
@@ -21,6 +22,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   addPipesAndFilters(app);
   closables.push(app);
+
+  const options = new DocumentBuilder()
+      .setTitle('Traduora')
+      .setDescription('Translation management platform for teams API')
+      .setVersion('1.0')
+      .build();
+
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('api/v1', app, document);
 
   // Run migrations
   if (config.autoMigrate) {
